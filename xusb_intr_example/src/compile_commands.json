@@ -1,0 +1,27 @@
+[
+{
+  "directory": "D:/vivado_pj/xusb_intr_example/build",
+  "command": "D:\\2025.1\\Vitis\\gnu\\aarch64\\nt\\aarch64-none\\bin\\aarch64-none-elf-gcc.exe -isystem D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include-fixed -isystem D:/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/aarch64-xilinx-elf/usr/include  -DSDT  -MMD -MP -specs=D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/Xilinx.spec -ID:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -Wall -Wextra      -O0  -g3     -U__clang__ -o CMakeFiles\\xusb_intr_example.elf.dir\\xusb_ch9.c.obj -c D:\\vivado_pj\\xusb_intr_example\\src\\xusb_ch9.c",
+  "file": "D:\\vivado_pj\\xusb_intr_example\\src\\xusb_ch9.c"
+},
+{
+  "directory": "D:/vivado_pj/xusb_intr_example/build",
+  "command": "D:\\2025.1\\Vitis\\gnu\\aarch64\\nt\\aarch64-none\\bin\\aarch64-none-elf-gcc.exe -isystem D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include-fixed -isystem D:/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/aarch64-xilinx-elf/usr/include  -DSDT  -MMD -MP -specs=D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/Xilinx.spec -ID:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -Wall -Wextra      -O0  -g3     -U__clang__ -o CMakeFiles\\xusb_intr_example.elf.dir\\xusb_ch9_storage.c.obj -c D:\\vivado_pj\\xusb_intr_example\\src\\xusb_ch9_storage.c",
+  "file": "D:\\vivado_pj\\xusb_intr_example\\src\\xusb_ch9_storage.c"
+},
+{
+  "directory": "D:/vivado_pj/xusb_intr_example/build",
+  "command": "D:\\2025.1\\Vitis\\gnu\\aarch64\\nt\\aarch64-none\\bin\\aarch64-none-elf-gcc.exe -isystem D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include-fixed -isystem D:/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/aarch64-xilinx-elf/usr/include  -DSDT  -MMD -MP -specs=D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/Xilinx.spec -ID:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -Wall -Wextra      -O0  -g3     -U__clang__ -o CMakeFiles\\xusb_intr_example.elf.dir\\xusb_class_storage.c.obj -c D:\\vivado_pj\\xusb_intr_example\\src\\xusb_class_storage.c",
+  "file": "D:\\vivado_pj\\xusb_intr_example\\src\\xusb_class_storage.c"
+},
+{
+  "directory": "D:/vivado_pj/xusb_intr_example/build",
+  "command": "D:\\2025.1\\Vitis\\gnu\\aarch64\\nt\\aarch64-none\\bin\\aarch64-none-elf-gcc.exe -isystem D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include-fixed -isystem D:/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/aarch64-xilinx-elf/usr/include  -DSDT  -MMD -MP -specs=D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/Xilinx.spec -ID:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -Wall -Wextra      -O0  -g3     -U__clang__ -o CMakeFiles\\xusb_intr_example.elf.dir\\xusb_intr_example.c.obj -c D:\\vivado_pj\\xusb_intr_example\\src\\xusb_intr_example.c",
+  "file": "D:\\vivado_pj\\xusb_intr_example\\src\\xusb_intr_example.c"
+},
+{
+  "directory": "D:/vivado_pj/xusb_intr_example/build",
+  "command": "D:\\2025.1\\Vitis\\gnu\\aarch64\\nt\\aarch64-none\\bin\\aarch64-none-elf-gcc.exe -isystem D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include -isystem D:/2025.1/gnu/aarch64/nt/aarch64-none/x86_64-oesdk-mingw32/usr/lib/aarch64-xilinx-elf/gcc/aarch64-xilinx-elf/13.3.0/include-fixed -isystem D:/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/aarch64-xilinx-elf/usr/include  -DSDT  -MMD -MP -specs=D:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/Xilinx.spec -ID:/vivado_pj/usb_mass_storage/export/usb_mass_storage/sw/standalone_psu_cortexa53_0/include -Wall -Wextra      -O0  -g3     -U__clang__ -o CMakeFiles\\xusb_intr_example.elf.dir\\xusb_wrapper.c.obj -c D:\\vivado_pj\\xusb_intr_example\\src\\xusb_wrapper.c",
+  "file": "D:\\vivado_pj\\xusb_intr_example\\src\\xusb_wrapper.c"
+}
+]

@@ -1,0 +1,16 @@
+{
+  "name": "xusb_intr_example",
+  "type": "HOST",
+  "platform": "usb_mass_storage",
+  "domain": "standalone_psu_cortexa53_0",
+  "cpuInstance": "psu_cortexa53_0",
+  "cpuType": "cortex-a53",
+  "os": "standalone",
+  "configuration": {
+    "componentType": "HOST",
+    "hostToolchainConfigurations": []
+  },
+  "domainRealName": "standalone_psu_cortexa53_0",
+  "useSysrootToolchain": false,
+  "applicationFlow": "EMBEDDED"
+}

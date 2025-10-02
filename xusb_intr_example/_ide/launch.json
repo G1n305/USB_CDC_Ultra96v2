@@ -1,0 +1,71 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "tcf-debug",
+      "request": "launch",
+      "name": "xusb_intr_example_app_hw_1",
+      "debugType": "baremetal-zu",
+      "attachToRunningTargetOptions": {
+        "targetSetupMode": "standalone",
+        "executeScript": true,
+        "scriptPath": ""
+      },
+      "autoAttachProcessChildren": false,
+      "target": {
+        "targetConnectionId": "Local",
+        "peersIniPath": "../../_ide/.peers.ini",
+        "context": "ZUPlus"
+      },
+      "pathMap": [],
+      "targetSetup": {
+        "resetSystem": true,
+        "programDevice": true,
+        "partialBitstream": false,
+        "skipRevisionCheck": false,
+        "device": {
+          "plDevice": "Auto Detect",
+          "psDevice": "Auto Detect"
+        },
+        "enableRPUSplitMode": false,
+        "resetAPU": false,
+        "resetRPU": false,
+        "bitstreamFile": "${workspaceFolder}\\xusb_intr_example\\_ide\\bitstream\\design_1_wrapper.bit",
+        "zuInitialization": {
+          "isFsbl": true,
+          "usingFSBL": {
+            "initWithFSBL": true,
+            "fsblFile": "${workspaceFolder}\\usb_mass_storage\\export\\usb_mass_storage\\sw\\boot\\fsbl.elf",
+            "fsblExitSymbol": "XFsbl_Exit"
+          },
+          "usingPsuInit": {
+            "runPsuInit": true,
+            "plPowerup": true,
+            "psuInitTclFile": "${workspaceFolder}\\xusb_intr_example\\_ide\\psinit\\psu_init.tcl"
+          }
+        },
+        "zuTraceOptions": {
+          "isSelected": false,
+          "scratchAddress": "0x60000",
+          "scratchSize": "0x60000",
+          "traceOutputPath": ""
+        },
+        "downloadElf": [
+          {
+            "core": "psu_cortexa53_0",
+            "resetProcessor": true,
+            "elfFile": "${workspaceFolder}\\xusb_intr_example\\build\\xusb_intr_example.elf",
+            "stopAtEntry": false,
+            "isSelfRelocatingApp": false,
+            "relativeAddress": ""
+          }
+        ],
+        "crossTriggerBreakpoints": {
+          "isSelected": false,
+          "breakpoints": []
+        }
+      },
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}

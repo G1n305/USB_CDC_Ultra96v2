@@ -1,0 +1,3 @@
+D:/vivado_pj/usb_mass_storage/zynqmp_fsbl/build/CMakeFiles/fsbl.elf.dir
+D:/vivado_pj/usb_mass_storage/zynqmp_fsbl/build/CMakeFiles/edit_cache.dir
+D:/vivado_pj/usb_mass_storage/zynqmp_fsbl/build/CMakeFiles/rebuild_cache.dir
