@@ -58,6 +58,7 @@
 #include "xusb_class_storage.h"
 #include "xusb_wrapper.h"
 #include "xil_exception.h"
+#include "aes_demo.h"
 
 #ifdef __MICROBLAZE__
 #ifdef XPAR_INTC_0_DEVICE_ID
@@ -144,6 +145,15 @@ u32	rxBytesLeft;
 u8 *VirtFlashWritePointer = VirtFlash;
 u32 ReplyLen;
 
+#define CMD_HEADER_SIZE 3 
+#define CRC_SIZE 2
+
+/* AES token context & key */
+static TokenContext token;
+static const uint8_t device_key[AES_KEY_SIZE] = {
+    0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,
+    0xab,0xf7,0x97,0x75,0x46,0x7e,0xf3,0x1c
+};
 
 /* Initialize a DFU data structure */
 static USBCH9_DATA storage_data = {
@@ -248,6 +258,10 @@ int main(void)
 		return XST_FAILURE;
 	}
 
+	/* 5. Initialize AES token */
+	token_init(&token, "usb_user", device_key);
+	xil_printf("AES initialized for token user 'usb_user'\r\n");
+
 	/* Start the controller so that Host can see our device */
 	Usb_Start(UsbInstance.PrivateData);
 
@@ -309,15 +323,197 @@ void EpIntrInHandler(void *CallBackRef, u32 RequestedBytes, u32 BytesTxed)
 *****************************************************************************/
 void BulkOutHandler(void *CallBackRef, u32 RequestedBytes, u32 BytesTxed)
 {
-	xil_printf("Receivede data from PC \r\n");
+	// xil_printf("Receivede data from PC \r\n");
 
-	struct Usb_DevData *InstancePtr = CallBackRef;
-	VirtFlash[10] = '\0';
+	// struct Usb_DevData *InstancePtr = CallBackRef;
+	// VirtFlash[10] = '\0';
 
-	xil_printf("Receivede data from PC : %d - %s \r\n", inData++, VirtFlash);
+	// xil_printf("Receivede data from PC : %d - %s \r\n", inData++, VirtFlash);
 
-	// send out the rcvd data
-	EpBufferSend(InstancePtr->PrivateData, 2, VirtFlash, 10);
+	// // send out the rcvd data
+	// EpBufferSend(InstancePtr->PrivateData, 2, VirtFlash, 10);
+//v1.0
+	// struct Usb_DevData *InstancePtr = CallBackRef;
+
+    // xil_printf("\r\n[BulkOutHandler] Received %lu bytes from PC\r\n", BytesTxed);
+
+    // // 🆕 [THÊM MỚI] Chuẩn bị buffer cho mã hoá AES
+    // uint8_t plaintext[AES_BLOCK_SIZE] = {0};
+    // uint8_t ciphertext[AES_BLOCK_SIZE] = {0};
+
+    // // 🆕 [THÊM MỚI] Copy tối đa 16 byte từ VirtFlash (padding nếu thiếu)
+    // u32 len = (BytesTxed > AES_BLOCK_SIZE) ? AES_BLOCK_SIZE : BytesTxed;
+    // memcpy(plaintext, VirtFlash, len);
+
+    // // 🆕 [THÊM MỚI] Mã hoá AES block
+    // memcpy(token.plaintext, plaintext, AES_BLOCK_SIZE);
+    // memcpy(token.ciphertext, token.plaintext, AES_BLOCK_SIZE);
+    // AES_encrypt(&token.aes, token.ciphertext);
+
+    // xil_printf("Ciphertext: ");
+    // for (int i = 0; i < AES_BLOCK_SIZE; i++)
+    //     xil_printf("%02x ", token.ciphertext[i]);
+    // xil_printf("\r\n");
+
+    // // 🆕 [THÊM MỚI] Gửi ciphertext về lại PC
+    // EpBufferSend(InstancePtr->PrivateData, 2, token.ciphertext, AES_BLOCK_SIZE);
+//v1.01
+    struct Usb_DevData *InstancePtr = CallBackRef;
+    xil_printf("\r\n[BulkOutHandler] Received %lu bytes from PC\r\n", BytesTxed);
+
+    /* minimum header check */
+    if (BytesTxed < CMD_HEADER_SIZE) {
+        xil_printf("[BulkOutHandler] Packet too short\r\n");
+        return;
+    }
+
+    uint8_t *buf = VirtFlash; /* driver puts received data into VirtFlash[] */
+    uint8_t cmd = buf[0];
+    uint16_t payload_len = (uint16_t)buf[1] | ((uint16_t)buf[2] << 8);
+
+    /* determine if CRC is present */
+    int has_crc = 0;
+    if (BytesTxed >= (size_t)(CMD_HEADER_SIZE + payload_len + CRC_SIZE))
+        has_crc = 1;
+
+    /* basic bounds check */
+    if ((size_t)(CMD_HEADER_SIZE + payload_len) > BytesTxed) {
+        xil_printf("[BulkOutHandler] Payload length mismatch: %u vs BytesTxed %lu\r\n", payload_len, BytesTxed);
+        return;
+    }
+
+    /* optional CRC verification */
+    if (has_crc) {
+        uint16_t received_crc = (uint16_t)buf[CMD_HEADER_SIZE + payload_len] |
+                                ((uint16_t)buf[CMD_HEADER_SIZE + payload_len + 1] << 8);
+        uint16_t calc = crc16_ccitt(buf, CMD_HEADER_SIZE + payload_len);
+        if (calc != received_crc) {
+            xil_printf("[BulkOutHandler] CRC mismatch: calc=0x%04x recv=0x%04x\r\n", calc, received_crc);
+            /* send error response: CMD same id, len=1, data=0x00 indicates CRC error */
+            uint8_t resp_err[5];
+            resp_err[0] = cmd;
+            resp_err[1] = 0x01; resp_err[2] = 0x00; /* len = 1 */
+            resp_err[3] = 0x00; /* error code */
+            uint16_t crc_err = crc16_ccitt(resp_err, 4);
+            resp_err[4] = crc_err & 0xFF;
+            resp_err[5] = (crc_err >> 8) & 0xFF;
+            EpBufferSend(InstancePtr->PrivateData, 2, resp_err, 6);
+            return;
+        }
+    }
+
+    uint8_t *payload = &buf[CMD_HEADER_SIZE];
+
+    /* response buffer (max size choose reasonable e.g., 512) */
+    static uint8_t response[512];
+    size_t resp_len = 0;
+
+    switch (cmd) {
+        case 0x01: /* CMD_GET_INFO */
+        {
+            const char info[] = "EBOOST-TOKENv1";
+            size_t info_len = strlen(info);
+            response[0] = cmd;
+            response[1] = (uint8_t)(info_len & 0xFF);
+            response[2] = (uint8_t)((info_len >> 8) & 0xFF);
+            memcpy(&response[3], info, info_len);
+            resp_len = 3 + info_len;
+            break;
+        }
+
+        case 0x02: /* CMD_AUTH_CHALLENGE */
+        {
+            /* Accept variable length challenge, we'll AES-CBC encrypt it and return */
+            /* Pad to 16-byte using PKCS#7 */
+            uint8_t local_in[256];
+            if (payload_len > 240) { /* keep buffer safe */
+                xil_printf("[BulkOutHandler] Challenge too large\n");
+                payload_len = 240;
+            }
+            memcpy(local_in, payload, payload_len);
+            size_t padded = pkcs7_pad(local_in, payload_len, AES_BLOCK_SIZE);
+
+            /* use IV = zeros for demo (in production use random IV and send it) */
+            uint8_t iv[AES_BLOCK_SIZE] = {0};
+            uint8_t local_out[256];
+            AES_encrypt_CBC(&token.aes, local_in, local_out, padded, iv);
+
+            response[0] = cmd;
+            response[1] = (uint8_t)(padded & 0xFF);
+            response[2] = (uint8_t)((padded >> 8) & 0xFF);
+            memcpy(&response[3], local_out, padded);
+            resp_len = 3 + padded;
+            break;
+        }
+
+        case 0x03: /* CMD_SIGN_DATA (demo: AES-CBC of data) */
+        {
+            uint8_t local_in[64];
+            if (payload_len > 48) payload_len = 48;
+            memcpy(local_in, payload, payload_len);
+            size_t padded = pkcs7_pad(local_in, payload_len, AES_BLOCK_SIZE);
+            uint8_t iv[AES_BLOCK_SIZE] = {0};
+            uint8_t sig[64];
+            AES_encrypt_CBC(&token.aes, local_in, sig, padded, iv);
+
+            /* For demo we return ciphertext as "signature", in real device do ECDSA */
+            response[0] = cmd;
+            response[1] = (uint8_t)(padded & 0xFF);
+            response[2] = (uint8_t)((padded >> 8) & 0xFF);
+            memcpy(&response[3], sig, padded);
+            resp_len = 3 + padded;
+            break;
+        }
+
+        case 0x04: /* CMD_SET_KEY */
+        {
+            /* Only accept key length equal AES_KEY_SIZE */
+            if (payload_len != AES_KEY_SIZE) {
+                /* error */
+                response[0] = cmd;
+                response[1] = 0x01; response[2] = 0x00;
+                response[3] = 0x00; /* fail */
+                resp_len = 4;
+            } else {
+                token_set_key(&token, payload, AES_KEY_SIZE); /* [ADDED] */
+                response[0] = cmd;
+                response[1] = 0x01; response[2] = 0x00;
+                response[3] = 0x01; /* OK */
+                resp_len = 4;
+            }
+            break;
+        }
+
+        case 0x05: /* CMD_RESET */
+        {
+            token_reset(&token); /* wipe all sensitive state */
+            response[0] = cmd;
+            response[1] = 0x01; response[2] = 0x00;
+            response[3] = 0x01; /* OK */
+            resp_len = 4;
+            break;
+        }
+
+        default:
+        {
+            response[0] = cmd;
+            response[1] = 0x01; response[2] = 0x00;
+            response[3] = 0xFF; /* unknown command */
+            resp_len = 4;
+            break;
+        }
+    } /* end switch */
+
+    /* append CRC16 to response */
+    uint16_t crc = crc16_ccitt(response, resp_len);
+    response[resp_len + 0] = crc & 0xFF;
+    response[resp_len + 1] = (crc >> 8) & 0xFF;
+    resp_len += 2;
+
+    /* send via Bulk IN endpoint */
+    EpBufferSend(InstancePtr->PrivateData, 2, response, resp_len);
+
+    xil_printf("[BulkOutHandler] Processed CMD 0x%02x, sent %lu bytes\r\n", cmd, resp_len);
 
 }
 
@@ -342,9 +538,12 @@ void BulkInHandler(void *CallBackRef, u32 RequestedBytes,
 
 	struct Usb_DevData *InstancePtr = CallBackRef;
 
-	xil_printf("Send Data OUT - BulkInHandler %d \r\n", outData++);
+	xil_printf("[BulkInHandler] Sent packet #%lu\r\n", outData++);
+	EpBufferRecv(InstancePtr->PrivateData, 2, VirtFlash, 64); // 🆕 [sửa nhẹ] buffer 64B
 
-	EpBufferRecv(InstancePtr->PrivateData, 2, VirtFlash, 10);
+	// xil_printf("Send Data OUT - BulkInHandler %d \r\n", outData++);
+
+	// EpBufferRecv(InstancePtr->PrivateData, 2, VirtFlash, 10);
 
 }
 
